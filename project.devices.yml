@@ -1,0 +1,12 @@
+# 设备实现包的增量配置（ADR-0016）：scripts/gen_proj.sh 检测到 EdgelyDevices/ 存在时，与 project.yml 合并生成工程。
+packages:
+  EdgelyDevices:
+    path: EdgelyDevices
+targets:
+  Edgely:
+    dependencies:
+      - package: EdgelyDevices
+    settings:
+      base:
+        # app 里的注册代码用它判断，而不用 canImport：构建目录里残留的旧模块会让 canImport 误判
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) EDGELY_DEVICES"

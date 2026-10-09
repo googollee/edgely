@@ -1,0 +1,17 @@
+.DS_Store
+
+# 工程文件由 make proj 生成，不进版本管理
+Edgely.xcodeproj
+Generated/
+
+# 可选的设备实现包，独立维护（ADR-0016）
+EdgelyDevices/
+
+# 真实滑雪数据
+real_data/
+
+# Xcode / SwiftPM
+xcuserdata/
+DerivedData/
+.build/
+.swiftpm/

@@ -1,0 +1,65 @@
+name: Edgely
+options:
+  bundleIdPrefix: im.googol
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
+    STRING_CATALOG_GENERATE_SYMBOLS: YES
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    DEVELOPMENT_TEAM: U652BY6X67
+packages:
+  AttSensorKit:
+    path: AttSensorKit
+targets:
+  Edgely:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Edgely
+    dependencies:
+      - package: AttSensorKit
+    info:
+      path: Generated/Info.plist
+      properties:
+        UILaunchScreen: {}
+        NSBluetoothAlwaysUsageDescription: "需要蓝牙连接雪靴上的运动传感器，以采集滑雪姿态数据"
+        NSLocationWhenInUseUsageDescription: "需要定位权限记录本次滑行的 GPS 轨迹"
+        NSLocationAlwaysAndWhenInUseUsageDescription: "需要持续定位权限，以便 App 切到后台时仍能记录 GPS 轨迹"
+        UIBackgroundModes:
+          - bluetooth-central
+          - location
+        LSSupportsOpeningDocumentsInPlace: true
+        UIFileSharingEnabled: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: im.googol.edgely
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+  EdgelyTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: EdgelyTests
+    dependencies:
+      - target: Edgely
+      - package: AttSensorKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: im.googol.edgely.tests
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  Edgely:
+    build:
+      targets:
+        Edgely: all
+        EdgelyTests: [test]
+    test:
+      targets:
+        - EdgelyTests
