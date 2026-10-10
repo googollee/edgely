@@ -1,7 +1,7 @@
 import XCTest
 @testable import Edgely
 
-/// 回放页读取传感器文件时的缺口解析（PRD F4：复盘时要看得出哪段时间数据缺失）。
+/// 回放页读取传感器文件时的缺口解析（PRD F-004：复盘时要看得出哪段时间数据缺失）。
 final class SessionFileLoaderTests: XCTestCase {
     private func sample(_ t: Double) -> String {
         #"{"t":\#(t),"type":"sample","accelX":0,"accelY":0,"accelZ":-1,"gyroX":0,"gyroY":0,"gyroZ":0,"angleX":0,"angleY":0,"angleZ":0}"#

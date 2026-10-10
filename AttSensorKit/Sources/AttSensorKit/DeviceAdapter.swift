@@ -16,7 +16,7 @@ public protocol DeviceAdapter: AnyObject {
     /// `isReady` 的变化流（订阅时先给出当前值）。注意发布发生在值改变之前，要用回调给出的值，不要回头读 `isReady`
     var isReadyPublisher: AnyPublisher<Bool, Never> { get }
 
-    /// 最近一次收到实时数据的时间。断线检测（PRD F4）只看它；电量等寄存器响应不算，
+    /// 最近一次收到实时数据的时间。断线检测（PRD F-004）只看它；电量等寄存器响应不算，
     /// 否则实时数据流停了、而寄存器读取仍有回应时，缺口会被遮住
     var lastRealtimeAt: Date? { get }
 

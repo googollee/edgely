@@ -1,7 +1,7 @@
 import SwiftUI
 import simd
 
-/// F5：从历史记录列表（F7）选中某个 session 后展示可拖动时间轴 + 姿态回放，以及数据质量概览。
+/// F-005：从历史记录列表（F-007）选中某个 session 后展示可拖动时间轴 + 姿态回放，以及数据质量概览。
 /// 姿态计算方式（鞋形几何体 + 校准对齐 + 加速度计倾斜锚定）见 ADR-0005。
 struct ReviewView: View {
     let sessionId: String
@@ -64,7 +64,7 @@ struct ReviewView: View {
         return rows
     }
 
-    /// 当前时间点落在缺口里的传感器（F4：复盘时要看得出这段数据缺失）
+    /// 当前时间点落在缺口里的传感器（F-004：复盘时要看得出这段数据缺失）
     private var missingSensorNames: [String] {
         var names: [String] = []
         if leftGaps.contains(where: { $0.contains(scrubTime) }) { names.append("左脚") }
@@ -74,7 +74,7 @@ struct ReviewView: View {
 
     /// 见 ADR-0005：先按最近邻取该时刻的原始加速度计读数，再算"校准对齐 + 实时倾斜"的最终旋转。
     /// 没有校准参考系（旧版本录制的数据可能没有）时返回 nil，不渲染。
-    /// 落在数据缺口里时也返回 nil：不用缺口前的旧读数填充（PRD F4），模型隐藏，配合下方"数据缺失"提示。
+    /// 落在数据缺口里时也返回 nil：不用缺口前的旧读数填充（PRD F-004），模型隐藏，配合下方"数据缺失"提示。
     private func orientation(at t: Double, samples: [(t: Double, accel: SIMD3<Float>)], frame: SensorOrientationFrame?, gaps: [DataGap]) -> simd_quatf? {
         guard let frame, !samples.isEmpty, !gaps.contains(where: { $0.contains(t) }) else { return nil }
         var lo = 0
@@ -146,7 +146,7 @@ struct ReviewView: View {
 }
 
 /// 一段数据缺失的时间区间（相对录制开始的秒数）。
-/// 起点取"缺口前最后一个采样点"的时刻：`gap_start` 记录的是连续 2 秒没收到数据时才判定的时刻（PRD F4），
+/// 起点取"缺口前最后一个采样点"的时刻：`gap_start` 记录的是连续 2 秒没收到数据时才判定的时刻（PRD F-004），
 /// 真正缺数据的时间从最后一个采样之后就开始了。终点是重新收到数据（`gap_end`）的时刻。
 struct DataGap: Equatable {
     let start: Double

@@ -2,7 +2,7 @@ import AttSensorKit
 import Foundation
 import simd
 
-/// F2：功能性方向校准。双传感器、单传感器走同一套四步流程，不需要用户手动选择左右脚——
+/// F-002：功能性方向校准。双传感器、单传感器走同一套四步流程，不需要用户手动选择左右脚——
 /// 抬左脚、抬右脚两步判定身份，站立步取重力基准，最后一步从并拢开始左右脚各迈一步、算前轴。
 /// 整套流程的决定（身份判定、前轴算法、失败处理、落盘）见 ADR-0012。
 ///
@@ -72,7 +72,7 @@ final class CalibrationEngine: ObservableObject {
     private var singleLeftLiftPeak: Float?
 
     /// - Parameters:
-    ///   - sensors: 1 个或 2 个已连接的传感器（见 PRD F1）
+    ///   - sensors: 1 个或 2 个已连接的传感器（见 PRD F-001）
     ///   - recorder: 校准数据落盘（见 ADR-0012），默认 nil——测试不需要文件系统，生产由调用方注入
     ///   - stepTimeLimit: 单步时限，默认见 `defaultStepTimeLimit`；测试里可以传很小的值来验证超时，不必真等几秒
     init(sensors: [DeviceAdapter], recorder: CalibrationRecording? = nil, stepTimeLimit: TimeInterval = CalibrationEngine.defaultStepTimeLimit) {

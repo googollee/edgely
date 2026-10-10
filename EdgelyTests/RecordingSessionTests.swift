@@ -2,7 +2,7 @@ import XCTest
 import AttSensorKit
 @testable import Edgely
 
-/// 录制结束的收尾（PRD F3：记录结束时刻的电量与结束时间）。
+/// 录制结束的收尾（PRD F-003：记录结束时刻的电量与结束时间）。
 /// 用 `MockAdapter` 代替真实设备：`RecordingSession` 只依赖 AttSensorKit 的协议。
 final class RecordingSessionTests: XCTestCase {
     private func makeAdapter() throws -> MockAdapter {

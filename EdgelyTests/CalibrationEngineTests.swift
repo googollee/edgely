@@ -67,7 +67,7 @@ final class CalibrationEngineTests: XCTestCase {
     private func stepSignal(direction: SIMD3<Float>) -> [TimedSample] {
         let amplitude: Float = 0.2
         let accelerateSeconds: TimeInterval = 0.3
-        // 这里不让传感器转动：引擎的姿态是从站立起连续积分的（ADR-0011），各窗口的合成信号又是独立构造的，
+        // 这里不让传感器转动：引擎的姿态是从站立起连续积分的（ADR-0012 §5），各窗口的合成信号又是独立构造的，
         // 一旦带转动，窗口之间的体姿态就不连续了。转动补偿的算法细节由 CalibrationMathTests 覆盖。
         let rotationRate: Float = 0
         let spin = down * rotationRate

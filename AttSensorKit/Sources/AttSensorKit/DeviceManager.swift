@@ -2,7 +2,7 @@ import Combine
 import CoreBluetooth
 import Foundation
 
-/// F1：扫描并连接姿态传感器，不区分左右身份。通用部分——扫描、认领、连接确认、断线重连——都在这里，
+/// F-001：扫描并连接姿态传感器，不区分左右身份。通用部分——扫描、认领、连接确认、断线重连——都在这里，
 /// 不认识任何具体设备的协议；具体设备的适配器由注册表里认领它的工厂创建（ADR-0016）。
 public final class DeviceManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     @Published public private(set) var discovered: [DiscoveredDevice] = []
@@ -15,7 +15,7 @@ public final class DeviceManager: NSObject, ObservableObject, CBCentralManagerDe
 
     private var central: CBCentralManager!
     private var devicesByPeripheral: [UUID: DiscoveredDevice] = [:]
-    /// 用户要求连接的外设：意外断开后自动重连（PRD F3/F4）。校准、录制期间都一样，不区分阶段
+    /// 用户要求连接的外设：意外断开后自动重连（PRD F-003/F-004）。校准、录制期间都一样，不区分阶段
     private var desiredConnections: Set<UUID> = []
 
     public init(registry: DeviceAdapterRegistry) {

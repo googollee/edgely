@@ -1,7 +1,7 @@
 import XCTest
 @testable import Edgely
 
-/// 校准落盘记录的编码（见 ADR-0012「校准数据落盘」、system-design.md「校准数据」）。
+/// 校准落盘记录的编码（见 ADR-0012「校准数据落盘」、docs/reference/session-data-format.md）。
 final class CalibrationRecorderTests: XCTestCase {
     // MARK: - 抬脚窗口的判定记录（ADR-0012）
 

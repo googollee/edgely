@@ -18,7 +18,7 @@ enum BatteryLevelPolicy {
 
 /// 监控一组传感器的电量，给出要在电池条上显示的读数（页面顶部，见 `BatteryBar`；显示规则见 ADR-0015）。
 ///
-/// 现在只有录制才会读电量；这里在传感器就绪时立刻读一次、之后按固定间隔轮询，连接、校准、录制各阶段都有数据。
+/// 传感器就绪时立刻读一次电量、之后按固定间隔轮询，连接、校准、录制各阶段都有数据。
 /// 录制自己的每分钟电量快照（`RecordingSession`）不受影响。
 final class BatteryMonitor: ObservableObject {
     enum Side { case left, right }

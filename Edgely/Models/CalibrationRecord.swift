@@ -5,7 +5,7 @@ import simd
 /// 区分"重来了几次"——同一个字段贯穿三个文件，不需要按尝试拆子目录。
 
 /// 交给判定算法的原始窗口采样，一行一个采样点，沿用 ADR-0001 的 JSON Lines 约定。
-/// `type` 恒为 "sample"（旧数据里还有 "chipTime" 记录，读取时按它过滤，见 system-design.md「校准数据」）。
+/// `type` 恒为 "sample"（旧数据里还有 "chipTime" 记录，读取时按它过滤，见 docs/reference/session-data-format.md）。
 /// `t` 是按采样序号重建的时间，`arrivalT` 是原始 BLE 到达时间（相对窗口第一个样本），
 /// 旧数据的 `t` 就是到达时间、没有 `arrivalT`。
 struct CalibrationSampleRecord: Codable {

@@ -2,7 +2,7 @@ import XCTest
 import CoreLocation
 @testable import Edgely
 
-/// 启动时申请定位权限的判断（PRD F6）：该问才问，已经决定的不重复打扰。
+/// 启动时申请定位权限的判断（PRD F-006）：该问才问，已经决定的不重复打扰。
 final class LocationPermissionTests: XCTestCase {
     func test_requestsWhenUndecidedOrOnlyWhenInUse() {
         XCTAssertTrue(LocationPermission.shouldRequest(for: .notDetermined))

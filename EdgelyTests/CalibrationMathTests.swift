@@ -170,7 +170,7 @@ final class CalibrationMathTests: XCTestCase {
         XCTAssertLessThan(result.diagnostics.peakSpeed!, CalibrationMath.minPeakSpeed)
     }
 
-    // MARK: - 姿态基准：窗口起点相对站立姿态倾斜 + 偏航（ADR-0011）
+    // MARK: - 姿态基准：窗口起点相对站立姿态倾斜 + 偏航（ADR-0012 §5）
 
     /// 把一个"窗口起点体坐标系 = 站立体坐标系"的信号，改写成"窗口起点体坐标系相对站立体坐标系转了 `startAttitude`"：
     /// 同一个真实动作，体坐标下的每个读数反向转一次。

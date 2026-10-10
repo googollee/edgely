@@ -24,7 +24,7 @@ struct TimedSample: Equatable {
     var wallClock: TimeInterval? = nil
 }
 
-/// F2 方向校准用到的纯计算逻辑：只接受采样窗口和数值，不依赖设备适配层/CoreBluetooth，
+/// F-002 方向校准用到的纯计算逻辑：只接受采样窗口和数值，不依赖设备适配层/CoreBluetooth，
 /// 可以直接单元测试、不需要 mock 任何接口。`CalibrationEngine` 负责取窗口数据、维护步骤状态机与单步超时。
 ///
 /// 整套流程的决定见 ADR-0012。两类窗口各走一条管线：

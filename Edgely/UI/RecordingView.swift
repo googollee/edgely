@@ -1,7 +1,7 @@
 import AttSensorKit
 import SwiftUI
 
-/// F3：录制前配置（采样率固定 50Hz，不可选）
+/// F-003：录制前配置（采样率固定 50Hz，不可选）
 struct PreRecordingView: View {
     @ObservedObject var coordinator: AppCoordinator
 
@@ -22,7 +22,7 @@ struct PreRecordingView: View {
     }
 }
 
-/// F3/F4：录制中界面，展示计时和左右脚连接/断线状态
+/// F-003/F-004：录制中界面，展示计时和左右脚连接/断线状态
 struct ActiveRecordingView: View {
     @ObservedObject var session: RecordingSession
     let coordinator: AppCoordinator

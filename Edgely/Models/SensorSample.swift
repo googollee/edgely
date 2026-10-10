@@ -2,7 +2,7 @@ import AttSensorKit
 import Foundation
 import simd
 
-/// 单条落盘记录。type 区分正常采样点、断线缺口标记、磁场读数（见 ADR-0001、PRD F4）。
+/// 单条落盘记录。type 区分正常采样点、断线缺口标记、磁场读数（见 ADR-0001、PRD F-004）。
 struct SensorSampleRecord: Codable {
     /// 相对本次录制开始的秒数。`sample` 是适配器重建的时间（见 ADR-0010；丢帧修正见 ADR-0014，由适配器流式估计，落盘后不再修改）；
     /// 其余类型（磁场、缺口标记）没有采样序号，仍是 BLE 到达时间（手机本地时钟）

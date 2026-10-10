@@ -1,7 +1,7 @@
 import Combine
 import SwiftUI
 
-/// F2：功能性方向校准——双传感器、单传感器走同一套四步流程，不需要用户手动选左右脚（见 ADR-0012）。
+/// F-002：功能性方向校准——双传感器、单传感器走同一套四步流程，不需要用户手动选左右脚（见 ADR-0012）。
 /// 每一步有单步时限（每一步相同，见 ADR-0012「窗口与时限」），本视图用一个本地计时器驱动倒计时显示。
 struct CalibrationView: View {
     @ObservedObject var engine: CalibrationEngine

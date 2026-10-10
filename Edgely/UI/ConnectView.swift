@@ -1,7 +1,7 @@
 import AttSensorKit
 import SwiftUI
 
-/// F1：连接传感器，用户勾选要使用的 1 个或 2 个
+/// F-001：连接传感器，用户勾选要使用的 1 个或 2 个
 struct ConnectView: View {
     let coordinator: AppCoordinator
     @ObservedObject var manager: DeviceManager
@@ -120,7 +120,7 @@ private struct SensorRow: View {
     }
 }
 
-/// 手套操作要求按钮足够大，见 PRD 非功能需求
+/// 手套操作要求按钮足够大，见 PRD F-009
 struct BigButtonStyle: ButtonStyle {
     let color: Color
     func makeBody(configuration: Configuration) -> some View {

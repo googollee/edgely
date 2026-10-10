@@ -25,7 +25,7 @@ final class SessionStorage {
     /// 本次 session 实际生成的数据文件名（不含 meta.json），写入 meta.json 供后续读取时判断包含哪些数据流
     let dataFileNames: [String]
 
-    /// 见 PRD F1/F3：传感器数量为 1~2 个，`left.jsonl`/`right.jsonl` 只在对应传感器被使用时才创建
+    /// 见 PRD F-001/F-003：传感器数量为 1~2 个，`left.jsonl`/`right.jsonl` 只在对应传感器被使用时才创建
     init(sessionId: String, hasLeft: Bool, hasRight: Bool) {
         self.sessionId = sessionId
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]

@@ -6,7 +6,7 @@ struct CalibrationFrameDTO: Codable {
     let front: [Float]
     let left: [Float]
 
-    /// 读取 meta.json 时还原成 SensorOrientationFrame，供 F5 姿态渲染使用（见 ADR-0005）
+    /// 读取 meta.json 时还原成 SensorOrientationFrame，供 F-005 姿态渲染使用（见 ADR-0005）
     var frame: SensorOrientationFrame {
         SensorOrientationFrame(
             down: SIMD3<Float>(down[0], down[1], down[2]),
@@ -26,14 +26,14 @@ extension SensorOrientationFrame {
     }
 }
 
-/// session 元数据，对应 ADR-0001 中的 meta.json
+/// session 元数据，即 meta.json（字段见 docs/reference/session-data-format.md）
 struct SessionMeta: Codable {
     let sessionId: String
     let outputRate: String
-    let bindingPosition: String // 固定为"雪靴"，见 PRD F3
+    let bindingPosition: String // 固定为"雪靴"，见 PRD F-003
     let startedAt: Date
     var endedAt: Date?
-    let sensorCount: Int // 1 或 2，见 PRD F1/F3
+    let sensorCount: Int // 1 或 2，见 PRD F-001/F-003
     let dataFileNames: [String] // 本次实际生成的数据文件名列表
     let leftCalibration: CalibrationFrameDTO?
     let rightCalibration: CalibrationFrameDTO?

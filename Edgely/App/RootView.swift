@@ -11,15 +11,15 @@ enum AppPhase {
     case review(sessionId: String, directory: URL)
 }
 
-/// 串联 F1 -> F2 -> F3/F4/F6 -> F7 -> F5 的流程协调者。
-/// 见 system-design.md「模块结构」：录制结束直接回 .connect；.review 唯一入口/出口是 .history。
+/// 串联 F-001 -> F-002 -> F-003/F-004/F-006 -> F-007 -> F-005 的流程协调者。
+/// 见 design.md「阶段状态机」：录制结束直接回 .connect；.review 唯一入口/出口是 .history。
 final class AppCoordinator: ObservableObject {
     @Published var phase: AppPhase = .connect
 
     let sensorManager = DeviceManager(registry: DeviceRegistration.makeRegistry())
     /// 电池条的数据来源，见 `BatteryBar`
     let batteryMonitor = BatteryMonitor()
-    /// 用户在 F1 勾选的传感器，校准、录制阶段监控它们的电量
+    /// 用户在 F-001 勾选的传感器，校准、录制阶段监控它们的电量
     private var selectedSensors: [DeviceAdapter] = []
     private var cancellables: Set<AnyCancellable> = []
     /// 持有到进程结束：系统弹窗期间申请者不能被释放
@@ -28,7 +28,7 @@ final class AppCoordinator: ObservableObject {
     private(set) var recording: RecordingSession?
 
     init() {
-        // 蓝牙权限由 DeviceManager 创建时触发；定位权限在这里一并申请（PRD 非功能需求：启动时按需申请）
+        // 蓝牙权限由 DeviceManager 创建时触发；定位权限在这里一并申请（PRD F-014：启动时按需申请）
         locationPermission.requestIfNeeded()
 
         $phase.sink { [weak self] phase in self?.updateBatteryWatch(for: phase) }.store(in: &cancellables)
@@ -75,7 +75,7 @@ final class AppCoordinator: ObservableObject {
         }
     }
 
-    /// - Parameter sensors: 用户在 F1 勾选的 1 个或 2 个已连接传感器
+    /// - Parameter sensors: 用户在 F-001 勾选的 1 个或 2 个已连接传感器
     func sensorsConnectedReadyForCalibration(_ sensors: [DeviceAdapter]) {
         selectedSensors = sensors
         // 进入校准阶段前，先把每个已连接传感器的回传速率设为 50Hz，再开始方向校准流程。
@@ -127,12 +127,12 @@ final class AppCoordinator: ObservableObject {
         phase = .connect
     }
 
-    /// F7：进入历史记录列表
+    /// F-007：进入历史记录列表
     func showHistory() {
         phase = .history
     }
 
-    /// F7：从历史记录列表选中某个 session，进入回放页
+    /// F-007：从历史记录列表选中某个 session，进入回放页
     func openSession(sessionId: String, directory: URL) {
         phase = .review(sessionId: sessionId, directory: directory)
     }

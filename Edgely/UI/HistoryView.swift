@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// F7：历史记录列表——唯一显示 session id，选中后进入 F5 回放页。
-/// 不是"手套操作"场景（见 PRD 非功能需求），用常规紧凑样式，不用大按钮。
+/// F-007：历史记录列表——唯一显示 session id，选中后进入 F-005 回放页。
+/// 不是"手套操作"场景（见 PRD F-009），用常规紧凑样式，不用大按钮。
 struct HistoryView: View {
     let coordinator: AppCoordinator
     @State private var sessionIDs: [String] = []

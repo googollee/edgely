@@ -120,7 +120,7 @@ final class CalibrationRecorder: CalibrationRecording {
 
     private static let newline = Data([0x0A])
 
-    /// 校准数据是留档分析用的，写失败不阻断校准流程本身（见 ADR-0012「后果」），所以这里静默吞掉错误。
+    /// 校准数据是留档分析用的，写失败不阻断校准流程本身（见 ADR-0012「影响」），所以这里静默吞掉错误。
     private func append<T: Encodable>(_ record: T, to handle: FileHandle?) {
         guard let handle, var data = try? encoder.encode(record) else { return }
         data.append(CalibrationRecorder.newline)

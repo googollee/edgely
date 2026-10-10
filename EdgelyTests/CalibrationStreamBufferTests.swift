@@ -3,7 +3,7 @@ import simd
 import AttSensorKit
 @testable import Edgely
 
-/// `CalibrationStreamBuffer`：窗口切片、`t` 的平移、站立基准的连续姿态。见 ADR-0011。
+/// `CalibrationStreamBuffer`：窗口切片、`t` 的平移、站立基准的连续姿态。见 ADR-0011、ADR-0012 §5。
 final class CalibrationStreamBufferTests: XCTestCase {
     private let origin = Date(timeIntervalSince1970: 1_000_000)
 

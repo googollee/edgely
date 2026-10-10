@@ -2,9 +2,9 @@ import SwiftUI
 import SceneKit
 import simd
 
-/// F5 技术实现：SceneKit（见 ADR-0002）。姿态计算方式（鞋形几何体 + 校准对齐 + 加速度计倾斜锚定）见 ADR-0005。
+/// F-005 技术实现：SceneKit（见 ADR-0002）。姿态计算方式（鞋形几何体 + 校准对齐 + 加速度计倾斜锚定）见 ADR-0005。
 struct Pose3DView: UIViewRepresentable {
-    /// nil 表示本次 session 未使用该侧传感器，或该侧没有可用的校准参考系（见 PRD F1/F5），对应几何体隐藏
+    /// nil 表示本次 session 未使用该侧传感器，或该侧没有可用的校准参考系（见 PRD F-001/F-005），对应几何体隐藏
     var leftOrientation: simd_quatf?
     var rightOrientation: simd_quatf?
 

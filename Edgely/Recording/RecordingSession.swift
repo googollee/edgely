@@ -4,8 +4,8 @@ import UIKit
 import CoreLocation
 import simd
 
-/// F3/F4/F6：录制配置与执行、断线检测与标记、GPS 轨迹记录。
-/// left/right 均为可选——本次 session 使用 1 个还是 2 个传感器，见 PRD F1/F3。
+/// F-003/F-004/F-006：录制配置与执行、断线检测与标记、GPS 轨迹记录。
+/// left/right 均为可选——本次 session 使用 1 个还是 2 个传感器，见 PRD F-001/F-003。
 final class RecordingSession: ObservableObject {
     @Published var elapsed: TimeInterval = 0
     @Published var leftConnected = true
@@ -32,9 +32,9 @@ final class RecordingSession: ObservableObject {
     private var leftGapOpen = false
     private var rightGapOpen = false
 
-    /// 断线判定阈值，见 PRD F4
+    /// 断线判定阈值，见 PRD F-004
     private let disconnectThreshold: TimeInterval = 2.0
-    /// 电量快照间隔，见 PRD F3
+    /// 电量快照间隔，见 PRD F-003
     private let batteryInterval: TimeInterval = 60
     /// 磁场轮询间隔：MVP 只为留档尽量多采集，不追求逐帧同步（磁场寄存器不随实时数据帧自动推送，需要主动轮询读取）
     private let magneticInterval: TimeInterval = 0.5
