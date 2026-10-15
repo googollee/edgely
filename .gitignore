@@ -7,7 +7,7 @@ Generated/
 # 可选的设备实现包，独立维护（ADR-0016）
 EdgelyDevices/
 
-# 真实滑雪数据
+# 真实运动数据
 real_data/
 
 # Xcode / SwiftPM

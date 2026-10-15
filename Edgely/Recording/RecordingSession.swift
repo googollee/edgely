@@ -105,7 +105,6 @@ final class RecordingSession: ObservableObject {
         storage.writeMeta(SessionMeta(
             sessionId: sessionId,
             outputRate: outputRateLabel,
-            bindingPosition: "雪靴",
             startedAt: startDate,
             endedAt: endedAt,
             sensorCount: (hasLeft ? 1 : 0) + (hasRight ? 1 : 0),

@@ -31,7 +31,6 @@ Documents/
 | --- | --- |
 | `sessionId` | session 标识 |
 | `outputRate` | 回传速率，如 `"50Hz"` |
-| `bindingPosition` | 传感器安装位置，固定为 `"雪靴"` |
 | `startedAt` / `endedAt` | 开始、结束时刻，ISO 8601 格式；录制未正常结束时没有 `endedAt` |
 | `sensorCount` | 本次使用的传感器数量，1 或 2 |
 | `dataFileNames` | 本次实际生成的数据文件名列表 |

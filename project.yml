@@ -27,7 +27,7 @@ targets:
       path: Generated/Info.plist
       properties:
         UILaunchScreen: {}
-        NSBluetoothAlwaysUsageDescription: "需要蓝牙连接雪靴上的运动传感器，以采集滑雪姿态数据"
+        NSBluetoothAlwaysUsageDescription: "需要蓝牙连接鞋上的运动传感器，以采集运动姿态数据"
         NSLocationWhenInUseUsageDescription: "需要定位权限记录本次滑行的 GPS 轨迹"
         NSLocationAlwaysAndWhenInUseUsageDescription: "需要持续定位权限，以便 App 切到后台时仍能记录 GPS 轨迹"
         UIBackgroundModes:

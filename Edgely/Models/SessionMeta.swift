@@ -30,7 +30,6 @@ extension SensorOrientationFrame {
 struct SessionMeta: Codable {
     let sessionId: String
     let outputRate: String
-    let bindingPosition: String // 固定为"雪靴"，见 PRD F-003
     let startedAt: Date
     var endedAt: Date?
     let sensorCount: Int // 1 或 2，见 PRD F-001/F-003

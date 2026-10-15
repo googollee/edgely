@@ -22,7 +22,7 @@ struct ConnectView: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            Text("连接雪靴传感器").font(.title2).bold()
+            Text("连接鞋传感器").font(.title2).bold()
             Text(manager.bluetoothReady ? "蓝牙已就绪" : "等待蓝牙开启…")
                 .foregroundStyle(.secondary)
             if !manager.hasDeviceSupport {

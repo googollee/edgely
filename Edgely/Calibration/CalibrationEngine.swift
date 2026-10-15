@@ -380,7 +380,7 @@ final class CalibrationEngine: ObservableObject {
         switch step {
         case .liftLeft: return "请站稳，抬起左脚（离地即可）再放下，停稳后点击「确认」"
         case .liftRight: return "请站稳，抬起右脚（离地即可）再放下，停稳后点击「确认」"
-        case .standing: return "请双脚并拢自然站立、雪靴放平，站稳一两秒后点击「确认」"
+        case .standing: return "请双脚并拢自然站立、鞋放平，站稳一两秒后点击「确认」"
         case .stride: return "双脚并拢站稳后，左脚向前迈一步，右脚跟上并拢，停稳后点击「确认」，沿脚尖方向直着迈"
         case .done: return "校准完成"
         }

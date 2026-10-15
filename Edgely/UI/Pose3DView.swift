@@ -103,7 +103,7 @@ struct Pose3DView: UIViewRepresentable {
     }
 
     /// 简化的鞋形组合几何体（见 ADR-0005）：局部坐标系里脚尖 = +Z，鞋底 = -Y（对应 PoseAlignment 里的定义）。
-    /// 主体是长方体，前端加一个锥体标出脚尖，鞋底面单独上色区分。不是精细雪靴/雪板模型。
+    /// 主体是长方体，前端加一个锥体标出脚尖，鞋底面单独上色区分。不是精细的鞋模型。
     private func makeShoeNode(color: UIColor) -> SCNNode {
         let root = SCNNode()
 
