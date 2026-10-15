@@ -2,7 +2,7 @@ import SwiftUI
 import simd
 
 /// F-005：从历史记录列表（F-007）选中某个 session 后展示可拖动时间轴 + 姿态回放，以及数据质量概览。
-/// 姿态计算方式（鞋形几何体 + 校准对齐 + 加速度计倾斜锚定）见 ADR-0005。
+/// 姿态计算方式（鞋形几何体 + 校准对齐 + 加速度计倾斜锚定）见 ADR-0005；位移（相对窗口内平均位置）见 ADR-0017。
 struct ReviewView: View {
     let sessionId: String
     let directory: URL
@@ -12,12 +12,19 @@ struct ReviewView: View {
     @State private var hasRight = false
     @State private var leftFrame: SensorOrientationFrame?
     @State private var rightFrame: SensorOrientationFrame?
-    @State private var leftSamples: [(t: Double, accel: SIMD3<Float>)] = []
-    @State private var rightSamples: [(t: Double, accel: SIMD3<Float>)] = []
+    @State private var leftSamples: [SensorReading] = []
+    @State private var rightSamples: [SensorReading] = []
+    @State private var leftTrack: DisplacementCalculator.Track?
+    @State private var rightTrack: DisplacementCalculator.Track?
+    @State private var leftDisplacements: [SIMD3<Float>?] = []
+    @State private var rightDisplacements: [SIMD3<Float>?] = []
+    @State private var window: Double = DisplacementCalculator.defaultWindow
     @State private var leftGaps: [DataGap] = []
     @State private var rightGaps: [DataGap] = []
     @State private var duration: Double = 0.01
     @State private var scrubTime: Double = 0
+    @State private var isPlaying = false
+    @State private var isDragging = false
     @State private var summary: String = ""
 
     var body: some View {
@@ -26,11 +33,25 @@ struct ReviewView: View {
 
             Pose3DView(
                 leftOrientation: orientation(at: scrubTime, samples: leftSamples, frame: leftFrame, gaps: leftGaps),
-                rightOrientation: orientation(at: scrubTime, samples: rightSamples, frame: rightFrame, gaps: rightGaps)
+                rightOrientation: orientation(at: scrubTime, samples: rightSamples, frame: rightFrame, gaps: rightGaps),
+                leftDisplacement: displacement(at: scrubTime, samples: leftSamples, displacements: leftDisplacements),
+                rightDisplacement: displacement(at: scrubTime, samples: rightSamples, displacements: rightDisplacements)
             )
             .frame(height: 280)
 
-            Slider(value: $scrubTime, in: 0...duration)
+            Picker("平均窗口", selection: $window) {
+                ForEach(DisplacementCalculator.windowOptions, id: \.self) { Text("\(Int($0)) 秒").tag($0) }
+            }
+            .pickerStyle(.segmented)
+            .onChange(of: window) { _, _ in updateDisplacements() }
+            Text("位移：相对前后 \(Int(window)) 秒内平均位置").font(.caption).foregroundStyle(.secondary)
+
+            Slider(value: $scrubTime, in: 0...duration) { isDragging = $0 }
+            Button(isPlaying ? "暂停" : "播放", systemImage: isPlaying ? "pause.fill" : "play.fill") {
+                // 在终点点播放从头开始
+                if !isPlaying, scrubTime >= duration { scrubTime = 0 }
+                isPlaying.toggle()
+            }
             GapTimelineBar(duration: duration, rows: gapRows)
             Text(String(format: "%.1f s / %.1f s", scrubTime, duration))
                 .font(.caption)
@@ -54,6 +75,29 @@ struct ReviewView: View {
         }
         .padding()
         .onAppear(perform: load)
+        .onDisappear { isPlaying = false }
+        .task(id: isPlaying) { await play() }
+    }
+
+    /// 播放：按真实时间推进 scrubTime（1 秒对应 1 秒录制），到终点自动停止。
+    /// 用户拖动滑块期间不推进；松手后从新位置继续。视图消失或暂停时 task 被取消。
+    private func play() async {
+        guard isPlaying else { return }
+        let clock = ContinuousClock()
+        var last = clock.now
+        while !Task.isCancelled {
+            try? await Task.sleep(for: .milliseconds(16))
+            let now = clock.now
+            let parts = (now - last).components
+            let elapsed = Double(parts.seconds) + Double(parts.attoseconds) / 1e18
+            last = now
+            if isDragging { continue }
+            scrubTime = min(scrubTime + elapsed, duration)
+            if scrubTime >= duration {
+                isPlaying = false
+                return
+            }
+        }
     }
 
     /// 有缺口的传感器（只列有缺口的），供时间轴下方的缺口条使用
@@ -75,7 +119,7 @@ struct ReviewView: View {
     /// 见 ADR-0005：先按最近邻取该时刻的原始加速度计读数，再算"校准对齐 + 实时倾斜"的最终旋转。
     /// 没有校准参考系（旧版本录制的数据可能没有）时返回 nil，不渲染。
     /// 落在数据缺口里时也返回 nil：不用缺口前的旧读数填充（PRD F-004），模型隐藏，配合下方"数据缺失"提示。
-    private func orientation(at t: Double, samples: [(t: Double, accel: SIMD3<Float>)], frame: SensorOrientationFrame?, gaps: [DataGap]) -> simd_quatf? {
+    private func orientation(at t: Double, samples: [SensorReading], frame: SensorOrientationFrame?, gaps: [DataGap]) -> simd_quatf? {
         guard let frame, !samples.isEmpty, !gaps.contains(where: { $0.contains(t) }) else { return nil }
         var lo = 0
         var hi = samples.count - 1
@@ -84,6 +128,18 @@ struct ReviewView: View {
             if samples[mid].t <= t { lo = mid } else { hi = mid - 1 }
         }
         return PoseAlignment.renderOrientation(frame: frame, currentAccel: samples[lo].accel)
+    }
+
+    /// ADR-0017：最近邻取该时刻的位移（已换算到渲染世界坐标系，米）。nil 表示该时刻不展示位移。
+    private func displacement(at t: Double, samples: [SensorReading], displacements: [SIMD3<Float>?]) -> SIMD3<Float>? {
+        guard displacements.count == samples.count,
+              let i = DisplacementCalculator.index(at: t, in: samples) else { return nil }
+        return displacements[i]
+    }
+
+    private func updateDisplacements() {
+        leftDisplacements = leftTrack.map { DisplacementCalculator.displacements(track: $0, window: window) } ?? []
+        rightDisplacements = rightTrack.map { DisplacementCalculator.displacements(track: $0, window: window) } ?? []
     }
 
     private func load() {
@@ -103,6 +159,7 @@ struct ReviewView: View {
             let loaded = SessionFileLoader.loadSamples(url: directory.appendingPathComponent("left.jsonl"), sessionLength: sessionLength)
             leftSamples = loaded.samples
             leftGaps = loaded.gaps
+            leftTrack = leftFrame.map { DisplacementCalculator.track(readings: loaded.samples, gaps: loaded.gaps, frame: $0) }
             maxT = max(maxT, loaded.samples.last?.t ?? 0, loaded.gaps.last?.end ?? 0)
             lines.append("左脚采样点数：\(loaded.samples.count)，断线次数：\(loaded.gaps.count)" + (leftFrame == nil ? "（无校准参考系，不渲染姿态）" : ""))
             lines.append(contentsOf: gapLines(loaded.gaps))
@@ -111,10 +168,12 @@ struct ReviewView: View {
             let loaded = SessionFileLoader.loadSamples(url: directory.appendingPathComponent("right.jsonl"), sessionLength: sessionLength)
             rightSamples = loaded.samples
             rightGaps = loaded.gaps
+            rightTrack = rightFrame.map { DisplacementCalculator.track(readings: loaded.samples, gaps: loaded.gaps, frame: $0) }
             maxT = max(maxT, loaded.samples.last?.t ?? 0, loaded.gaps.last?.end ?? 0)
             lines.append("右脚采样点数：\(loaded.samples.count)，断线次数：\(loaded.gaps.count)" + (rightFrame == nil ? "（无校准参考系，不渲染姿态）" : ""))
             lines.append(contentsOf: gapLines(loaded.gaps))
         }
+        updateDisplacements()
         duration = max(maxT, 0.01)
         lines.append("时长：\(String(format: "%.1f", duration)) 秒")
 
@@ -185,15 +244,15 @@ private struct GapTimelineBar: View {
 }
 
 enum SessionFileLoader {
-    static func loadSamples(url: URL, sessionLength: Double? = nil) -> (samples: [(t: Double, accel: SIMD3<Float>)], gaps: [DataGap]) {
+    static func loadSamples(url: URL, sessionLength: Double? = nil) -> (samples: [SensorReading], gaps: [DataGap]) {
         guard let data = try? Data(contentsOf: url) else { return ([], []) }
         return parseSamples(data, sessionLength: sessionLength)
     }
 
     /// 解析 `left.jsonl`/`right.jsonl`：取出采样点，并把 `gap_start`/`gap_end` 配成缺口区间。
     /// 录制在断线期间结束时最后一个缺口没有 `gap_end`，终点取 `sessionLength`（没有时取文件里最后一条记录的时刻）。
-    static func parseSamples(_ data: Data, sessionLength: Double? = nil) -> (samples: [(t: Double, accel: SIMD3<Float>)], gaps: [DataGap]) {
-        var samples: [(t: Double, accel: SIMD3<Float>)] = []
+    static func parseSamples(_ data: Data, sessionLength: Double? = nil) -> (samples: [SensorReading], gaps: [DataGap]) {
+        var samples: [SensorReading] = []
         var gaps: [DataGap] = []
         var openGapStart: Double?
         var lastRecordT = 0.0
@@ -205,7 +264,8 @@ enum SessionFileLoader {
             switch record.type {
             case "sample":
                 if let x = record.accelX, let y = record.accelY, let z = record.accelZ {
-                    samples.append((record.t, SIMD3<Float>(x, y, z)))
+                    let gyro = SIMD3<Float>(record.gyroX ?? 0, record.gyroY ?? 0, record.gyroZ ?? 0)
+                    samples.append(SensorReading(t: record.t, accel: SIMD3<Float>(x, y, z), gyro: gyro))
                 }
             case "gap_start":
                 openGapStart = samples.last?.t ?? record.t

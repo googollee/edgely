@@ -7,6 +7,14 @@ struct Pose3DView: UIViewRepresentable {
     /// nil 表示本次 session 未使用该侧传感器，或该侧没有可用的校准参考系（见 PRD F-001/F-005），对应几何体隐藏
     var leftOrientation: simd_quatf?
     var rightOrientation: simd_quatf?
+    /// 相对窗口内平均位置的位移（渲染世界坐标系，米，见 ADR-0017）；nil 表示该时刻不展示位移，模型留在平均位置
+    var leftDisplacement: SIMD3<Float>?
+    var rightDisplacement: SIMD3<Float>?
+
+    /// 位移的显示比例：鞋模型长 0.9 个场景单位，约对应 0.3 米的真实靴子
+    private static let unitsPerMeter: Float = 3
+    /// 每个方向最多偏离平均位置的场景单位数，避免长窗口下模型飞出画面
+    private static let maxOffsetUnits: Float = 3
 
     func makeUIView(context: Context) -> SCNView {
         let view = SCNView()
@@ -47,7 +55,21 @@ struct Pose3DView: UIViewRepresentable {
         rightShoe.name = "right"
         scene.rootNode.addChildNode(rightShoe)
 
+        // 平均位置标记：位移是相对它的偏移，没有它看不出模型动了多少
+        for name in ["leftMarker", "rightMarker"] {
+            let marker = SCNNode(geometry: SCNSphere(radius: 0.05))
+            marker.geometry?.firstMaterial?.diffuse.contents = UIColor.systemGray
+            marker.name = name
+            scene.rootNode.addChildNode(marker)
+        }
+
         return view
+    }
+
+    private static func offset(_ displacement: SIMD3<Float>?) -> SCNVector3 {
+        guard let d = displacement else { return SCNVector3(0, 0, 0) }
+        let v = simd_clamp(d * unitsPerMeter, SIMD3<Float>(repeating: -maxOffsetUnits), SIMD3<Float>(repeating: maxOffsetUnits))
+        return SCNVector3(v.x, v.y, v.z)
     }
 
     func updateUIView(_ uiView: SCNView, context: Context) {
@@ -58,12 +80,24 @@ struct Pose3DView: UIViewRepresentable {
 
         if let leftNode = uiView.scene?.rootNode.childNode(withName: "left", recursively: false) {
             leftNode.isHidden = !showLeft
-            leftNode.position = SCNVector3(onlyOneShown ? 0 : 1.2, 0, 0)
+            let base = SCNVector3(onlyOneShown ? 0 : 1.2, 0, 0)
+            let o = Self.offset(leftDisplacement)
+            leftNode.position = SCNVector3(base.x + o.x, o.y, o.z)
+            if let marker = uiView.scene?.rootNode.childNode(withName: "leftMarker", recursively: false) {
+                marker.isHidden = !showLeft
+                marker.position = base
+            }
             if let leftOrientation { leftNode.simdOrientation = leftOrientation }
         }
         if let rightNode = uiView.scene?.rootNode.childNode(withName: "right", recursively: false) {
             rightNode.isHidden = !showRight
-            rightNode.position = SCNVector3(onlyOneShown ? 0 : -1.2, 0, 0)
+            let base = SCNVector3(onlyOneShown ? 0 : -1.2, 0, 0)
+            let o = Self.offset(rightDisplacement)
+            rightNode.position = SCNVector3(base.x + o.x, o.y, o.z)
+            if let marker = uiView.scene?.rootNode.childNode(withName: "rightMarker", recursively: false) {
+                marker.isHidden = !showRight
+                marker.position = base
+            }
             if let rightOrientation { rightNode.simdOrientation = rightOrientation }
         }
     }
