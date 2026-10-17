@@ -13,6 +13,8 @@ APP_STORE_CONNECT_KEY_ID ?= $(ASC_KEY_ID)
 APP_STORE_CONNECT_ISSUER_ID ?= $(ASC_ISSUER_ID)
 APP_STORE_CONNECT_KEY_PATH ?= $(abspath appstoreconnect/AuthKey_$(ASC_KEY_ID).p8)
 
+KEYCHAIN ?= $(HOME)/Library/Keychains/login.keychain-db
+
 IN_GIT_REPO := $(shell git rev-parse --is-inside-work-tree 2>/dev/null)
 
 ifeq ($(IN_GIT_REPO),true)
@@ -32,7 +34,7 @@ endif
 
 BUILD_NUMBER := $(shell date +%Y%m%d%H)
 
-.PHONY: proj generate test build release clean
+.PHONY: proj generate test build unlock release clean
 
 # 生成 Edgely.xcodeproj（带不带设备实现包由 scripts/gen_proj.sh 检测）
 proj:
@@ -52,6 +54,10 @@ build: proj
 		-project Edgely.xcodeproj \
 		-scheme $(SCHEME) \
 		-destination '$(SIMULATOR)'
+
+# 解锁登录 keychain，SSH 会话里签名前执行；会提示输入登录密码
+unlock:
+	security unlock-keychain $(KEYCHAIN)
 
 # 归档并上传到 App Store Connect（ExportOptions.plist 的 destination 为 upload）
 release: proj
