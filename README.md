@@ -26,7 +26,11 @@ Edgely 是一个 iOS App，用 1~2 个姿态传感器（IMU）采集各类运动
 需要 Xcode 和 [XcodeGen](https://github.com/yonaskolb/XcodeGen)，最低支持 iOS 17.0。
 
 ```sh
-make proj    # 生成 Edgely.xcodeproj
+make proj      # 生成 Edgely.xcodeproj
+make test      # 生成工程并运行单元测试
+make build     # 生成工程并构建 App
+make release   # 归档并上传到 App Store Connect（需要 appstoreconnect/config.mk 中的凭证）
+make clean     # 清理构建产物与生成的工程文件
 ```
 
 ## 文档

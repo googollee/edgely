@@ -15,3 +15,7 @@ xcuserdata/
 DerivedData/
 .build/
 .swiftpm/
+
+# 构建产物与 App Store Connect 凭证
+build/
+appstoreconnect/
