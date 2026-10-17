@@ -37,7 +37,7 @@ targets:
         UIFileSharingEnabled: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: im.googol.edgely
+        PRODUCT_BUNDLE_IDENTIFIER: im.googol.app.edgely
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_STYLE: Automatic
@@ -52,7 +52,7 @@ targets:
       - package: AttSensorKit
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: im.googol.edgely.tests
+        PRODUCT_BUNDLE_IDENTIFIER: im.googol.app.edgely.tests
         CODE_SIGN_STYLE: Automatic
         GENERATE_INFOPLIST_FILE: YES
 schemes:
